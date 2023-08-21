@@ -7,12 +7,13 @@ import (
 )
 
 type HotReloadStorageItem struct {
-	Jar          *Jar
-	BaseRequest  *BaseRequest
-	LoginInfo    *LoginInfo
-	WechatDomain WechatDomain
-	SyncKey      *SyncKey
-	UUID         string
+	Jar             *Jar
+	BaseRequest     *BaseRequest
+	LoginInfo       *LoginInfo
+	WechatDomain    WechatDomain
+	SyncKey         *SyncKey
+	SyncCheckKeyStr string
+	UUID            string
 }
 
 // HotReloadStorage 热登陆存储接口

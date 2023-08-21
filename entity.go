@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 /*
@@ -44,6 +45,16 @@ type SyncKey struct {
 	List  []struct{ Key, Val int64 }
 }
 
+func (k SyncKey) SyncKeyString() string {
+	var syncKeyStringSlice = make([]string, k.Count)
+	// 将SyncKey里面的元素按照特定的格式拼接起来
+	for index, item := range k.List {
+		i := fmt.Sprintf("%d_%d", item.Key, item.Val)
+		syncKeyStringSlice[index] = i
+	}
+	return strings.Join(syncKeyStringSlice, "|")
+}
+
 // WebInitResponse 初始化的相应信息
 type WebInitResponse struct {
 	Count               int
@@ -57,6 +68,7 @@ type WebInitResponse struct {
 	SKey                string
 	BaseResponse        BaseResponse
 	SyncKey             *SyncKey
+	SyncCheckKeyStr     string
 	User                *User
 	MPSubscribeMsgList  []*MPSubscribeMsg
 	ContactList         Members
