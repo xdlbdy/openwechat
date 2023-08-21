@@ -285,14 +285,14 @@ func (c *Client) SyncCheck(ctx context.Context, opt *ClientSyncCheckOptions) (*h
 	params.Add("uin", strconv.FormatInt(opt.LoginInfo.WxUin, 10))
 	params.Add("deviceid", opt.BaseRequest.DeviceID)
 	params.Add("_", strconv.FormatInt(time.Now().UnixNano()/1e6, 10))
-	var syncKeyStringSlice = make([]string, opt.WebInitResponse.SyncKey.Count)
-	// 将SyncKey里面的元素按照特定的格式拼接起来
-	for index, item := range opt.WebInitResponse.SyncKey.List {
-		i := fmt.Sprintf("%d_%d", item.Key, item.Val)
-		syncKeyStringSlice[index] = i
-	}
-	syncKey := strings.Join(syncKeyStringSlice, "|")
-	params.Add("synckey", syncKey)
+	//var syncKeyStringSlice = make([]string, opt.WebInitResponse.SyncKey.Count)
+	//// 将SyncKey里面的元素按照特定的格式拼接起来
+	//for index, item := range opt.WebInitResponse.SyncKey.List {
+	//	i := fmt.Sprintf("%d_%d", item.Key, item.Val)
+	//	syncKeyStringSlice[index] = i
+	//}
+	//syncKey := strings.Join(syncKeyStringSlice, "|")
+	params.Add("synckey", opt.WebInitResponse.SyncCheckKeyStr)
 	path.RawQuery = params.Encode()
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, path.String(), nil)
 	if err != nil {

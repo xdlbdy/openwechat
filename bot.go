@@ -154,6 +154,10 @@ func (b *Bot) webInit() error {
 	// 读取和装载SyncKey
 	if b.Storage.Response != nil {
 		resp.SyncKey = b.Storage.Response.SyncKey
+		resp.SyncCheckKeyStr = b.Storage.Response.SyncCheckKeyStr
+	}
+	if resp.SyncCheckKeyStr == "" {
+		resp.SyncCheckKeyStr = resp.SyncKey.SyncKeyString()
 	}
 	b.Storage.Response = resp
 
@@ -286,6 +290,9 @@ func (b *Bot) syncMessage() ([]*Message, error) {
 	if resp.SyncKey.Count > 0 {
 		b.Storage.Response.SyncKey = resp.SyncKey
 	}
+	if resp.SyncCheckKey.Count > 0 {
+		b.Storage.Response.SyncCheckKeyStr = resp.SyncCheckKey.SyncKeyString()
+	}
 	return resp.AddMsgList, nil
 }
 
@@ -331,12 +338,13 @@ func (b *Bot) DumpHotReloadStorage() error {
 func (b *Bot) DumpTo(writer io.Writer) error {
 	jar := b.Caller.Client.Jar()
 	item := HotReloadStorageItem{
-		BaseRequest:  b.Storage.Request,
-		Jar:          fromCookieJar(jar),
-		LoginInfo:    b.Storage.LoginInfo,
-		WechatDomain: b.Caller.Client.Domain,
-		SyncKey:      b.Storage.Response.SyncKey,
-		UUID:         b.uuid,
+		BaseRequest:     b.Storage.Request,
+		Jar:             fromCookieJar(jar),
+		LoginInfo:       b.Storage.LoginInfo,
+		WechatDomain:    b.Caller.Client.Domain,
+		SyncKey:         b.Storage.Response.SyncKey,
+		SyncCheckKeyStr: b.Storage.Response.SyncCheckKeyStr,
+		UUID:            b.uuid,
 	}
 	return b.Serializer.Encode(writer, item)
 }
@@ -374,6 +382,12 @@ func (b *Bot) reload() error {
 			b.Storage.Response = &WebInitResponse{}
 		}
 		b.Storage.Response.SyncKey = item.SyncKey
+	}
+	if item.SyncCheckKeyStr != "" {
+		if b.Storage.Response == nil {
+			b.Storage.Response = &WebInitResponse{}
+		}
+		b.Storage.Response.SyncCheckKeyStr = item.SyncCheckKeyStr
 	}
 	return nil
 }
